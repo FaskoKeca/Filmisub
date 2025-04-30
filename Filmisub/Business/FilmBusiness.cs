@@ -10,8 +10,10 @@ namespace Filmisub.Business
 {
     public class FilmBusiness
     {
+        // Instance of the FilmContext to interact with the database.
         public FilmContext filmContext;
 
+        // Retrieves all films from the database.
         public List<Film> GetAll()
         {
             using (filmContext = new FilmContext())
@@ -20,6 +22,7 @@ namespace Filmisub.Business
             }
         }
 
+        // Retrieves a film by its ID.
         public Film Get(int id)
         {
             using (filmContext = new FilmContext())
@@ -28,6 +31,7 @@ namespace Filmisub.Business
             }
         }
 
+        // Adds a new film to the database.
         public void Add(Film film)
         {
             using (filmContext = new FilmContext())
@@ -37,6 +41,7 @@ namespace Filmisub.Business
             }
         }
 
+        // Updates an existing film's data.
         public void Update(Film film)
         {
             using (filmContext = new FilmContext())
@@ -50,6 +55,7 @@ namespace Filmisub.Business
             }
         }
 
+        // Deletes a film from the database by ID.
         public void Delete(int id)
         {
             using (filmContext = new FilmContext())
@@ -63,4 +69,5 @@ namespace Filmisub.Business
             }
         }
     }
+
 }

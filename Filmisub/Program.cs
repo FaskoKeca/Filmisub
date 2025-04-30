@@ -11,7 +11,9 @@ namespace Filmisub
     {
         static void Main(string[] args)
         {
+            // Instantiate the Display class to launch the console interface.
             Display dsp = new Display();
         }
     }
+
 }

@@ -11,10 +11,11 @@ namespace Filmisub.Presentation
 {
     internal class Display
     {
-        public string accountType = "";
-        private int closeOperationId = 6;
-        FilmBusiness filmBusiness = new FilmBusiness();
+        public string accountType = ""; // Stores user account type.
+        private int closeOperationId = 6; // Menu option number to exit the application.
+        FilmBusiness filmBusiness = new FilmBusiness(); // Handles film-related operations.
 
+        // Prompts user to input account type and assigns role accordingly.
         private void CheckAccountType()
         {
             Console.WriteLine("Enter your account type: ");
@@ -35,6 +36,7 @@ namespace Filmisub.Presentation
             Console.Clear();
         }
 
+        // Displays admin menu options.
         private void ShowAdminMenu()
         {
             Console.WriteLine(new string('-', 40));
@@ -48,6 +50,7 @@ namespace Filmisub.Presentation
             Console.WriteLine("6. Exit");
         }
 
+        // Displays client menu options.
         private void ShowClientMenu()
         {
             Console.WriteLine(new string('-', 40));
@@ -59,69 +62,43 @@ namespace Filmisub.Presentation
             Console.WriteLine("4. Exit");
         }
 
+        // Displays option to go back to menu.
         private void GoBack()
         {
             Console.WriteLine("\n0. Go back");
-            var operation = -1;
-
-            operation = int.Parse(Console.ReadLine());
-
+            var operation = int.Parse(Console.ReadLine());
             Console.Clear();
 
             if (accountType == "admin")
-            {
-                switch (operation)
-                {
-                    case 0:
-                        ShowAdminMenu();
-                        break;
-                }
-            }
-            else
-            {
-                switch (operation)
-                {
-                    case 0:
-                        ShowClientMenu();
-                        break;
-                }
-            }
+                if (operation == 0) ShowAdminMenu();
+                else
+                if (operation == 0) ShowClientMenu();
 
             Console.Clear();
         }
 
+        // Handles the user's menu input and routes to operations.
         private void Input()
         {
             CheckAccountType();
+            var operation = -1;
+
             if (accountType.ToLower() == "admin")
             {
-                var operation = -1;
                 do
                 {
                     ShowAdminMenu();
                     try
                     {
                         operation = int.Parse(Console.ReadLine());
-
                         switch (operation)
                         {
-                            case 1:
-                                ListAll();
-                                break;
-                            case 2:
-                                Add();
-                                break;
-                            case 3:
-                                Update();
-                                break;
-                            case 4:
-                                Fetch();
-                                break;
-                            case 5:
-                                Delete();
-                                break;
-                            default:
-                                break;
+                            case 1: ListAll(); break;
+                            case 2: Add(); break;
+                            case 3: Update(); break;
+                            case 4: Fetch(); break;
+                            case 5: Delete(); break;
+                            default: break;
                         }
                     }
                     catch (FormatException)
@@ -132,27 +109,18 @@ namespace Filmisub.Presentation
             }
             else
             {
-                var operation = -1;
                 do
                 {
                     ShowClientMenu();
                     try
                     {
                         operation = int.Parse(Console.ReadLine());
-
                         switch (operation)
                         {
-                            case 1:
-                                ListAll();
-                                break;
-                            case 2:
-                                Add();
-                                break;
-                            case 3:
-                                Fetch();
-                                break;
-                            default:
-                                break;
+                            case 1: ListAll(); break;
+                            case 2: Add(); break;
+                            case 3: Fetch(); break;
+                            default: break;
                         }
                     }
                     catch (FormatException)
@@ -163,15 +131,16 @@ namespace Filmisub.Presentation
             }
         }
 
+        // Constructor initializes the user interaction.
         public Display()
         {
             Input();
         }
 
+        // Adds a new film to the database.
         private void Add()
         {
             Console.Clear();
-
             Film film = new Film();
             Console.WriteLine("Enter title: ");
             film.Title = Console.ReadLine();
@@ -191,6 +160,7 @@ namespace Filmisub.Presentation
             Console.Clear();
         }
 
+        // Lists all films.
         private void ListAll()
         {
             Console.Clear();
@@ -214,10 +184,10 @@ namespace Filmisub.Presentation
             GoBack();
         }
 
+        // Updates an existing film.
         private void Update()
         {
             Console.Clear();
-
             Console.WriteLine("Enter id to update");
             int id = int.Parse(Console.ReadLine());
             Film film = filmBusiness.Get(id);
@@ -238,7 +208,6 @@ namespace Filmisub.Presentation
 
                 Thread.Sleep(500);
                 Console.Clear();
-
                 Console.WriteLine("Entry updated successfully!");
             }
             else
@@ -250,10 +219,10 @@ namespace Filmisub.Presentation
             Console.Clear();
         }
 
+        // Fetches and displays a film by ID.
         private void Fetch()
         {
             Console.Clear();
-
             Console.WriteLine("Enter id to fetch: ");
             int id = int.Parse(Console.ReadLine());
             Film film = filmBusiness.Get(id);
@@ -277,19 +246,17 @@ namespace Filmisub.Presentation
             GoBack();
         }
 
+        // Deletes a film by ID.
         private void Delete()
         {
             Console.Clear();
-
             Console.WriteLine("Enter Id to delete: ");
             int id = int.Parse(Console.ReadLine());
             filmBusiness.Delete(id);
 
             Console.Clear();
-
             Console.WriteLine("Entry deleted successfully!");
             Thread.Sleep(3000);
-
             Console.Clear();
         }
     }

@@ -9,20 +9,22 @@ namespace Filmisub2
 {
     public partial class Form1 : Form
     {
-        private FilmBusiness filmBusiness = new FilmBusiness();
+        private FilmBusiness filmBusiness = new FilmBusiness(); // Business logic for film operations.
 
         public Form1()
         {
-            InitializeComponent();
-            LoadFilms();
+            InitializeComponent(); // Initializes WinForms components.
+            LoadFilms(); // Load films into DataGridView on startup.
         }
 
+        // Loads all films and displays them in the grid view.
         private void LoadFilms()
         {
             var films = filmBusiness.GetAll();
             dataGridView1.DataSource = films;
         }
 
+        // Clears all input fields.
         private void ClearFields()
         {
             txtId.Clear();
@@ -33,6 +35,7 @@ namespace Filmisub2
             txtDescription.Clear();
         }
 
+        // Constructs a Film object using values from input fields.
         private Film GetFilmFromInput()
         {
             return new Film
@@ -45,6 +48,7 @@ namespace Filmisub2
             };
         }
 
+        // Adds a new film when the "Add" button is clicked.
         private void btnAdd_Click(object sender, EventArgs e)
         {
             var film = GetFilmFromInput();
@@ -53,6 +57,7 @@ namespace Filmisub2
             ClearFields();
         }
 
+        // Updates an existing film by ID.
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             if (int.TryParse(txtId.Text, out int id))
@@ -69,6 +74,7 @@ namespace Filmisub2
             }
         }
 
+        // Deletes a film using its ID.
         private void btnDelete_Click(object sender, EventArgs e)
         {
             if (int.TryParse(txtId.Text, out int id))
@@ -83,6 +89,7 @@ namespace Filmisub2
             }
         }
 
+        // Fetches a film by ID and fills the input fields with its data.
         private void btnFetch_Click(object sender, EventArgs e)
         {
             if (int.TryParse(txtId.Text, out int id))
