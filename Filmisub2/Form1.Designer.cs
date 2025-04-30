@@ -151,7 +151,7 @@
             this.Controls.Add(this.lblYear);
             this.Controls.Add(this.lblGenre);
             this.Controls.Add(this.lblDescription);
-            this.Text = "Film Manager";
+            this.Text = "FilmiSub";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
