@@ -35,44 +35,74 @@ namespace Filmisub2
             txtDescription.Clear();
         }
 
-        // Constructs a Film object using values from input fields.
-        private Film GetFilmFromInput()
-        {
-            return new Film
-            {
-                Title = txtTitle.Text,
-                Director = txtDirector.Text,
-                Year = int.TryParse(txtYear.Text, out int year) ? year : 0,
-                Genre = txtGenre.Text,
-                Description = txtDescription.Text
-            };
-        }
-
         // Adds a new film when the "Add" button is clicked.
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            var film = GetFilmFromInput();
-            filmBusiness.Add(film);
-            LoadFilms();
-            ClearFields();
+            try
+            {
+                if (!int.TryParse(txtYear.Text, out int parsedYear) || parsedYear <= 1800 || parsedYear > DateTime.Now.Year + 1)
+                {
+                    MessageBox.Show("Please enter a valid year between 1800 and next year.", "Invalid Year", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var film = new Film
+                {
+                    Title = txtTitle.Text,
+                    Director = txtDirector.Text,
+                    Year = parsedYear,
+                    Genre = txtGenre.Text,
+                    Description = txtDescription.Text
+                };
+
+                filmBusiness.Add(film);
+                LoadFilms();
+                ClearFields();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Please enter a valid year between 1800 and next year.");
+            }
         }
+
 
         // Updates an existing film by ID.
         private void btnUpdate_Click(object sender, EventArgs e)
         {
-            if (int.TryParse(txtId.Text, out int id))
+            try
             {
-                var film = GetFilmFromInput();
-                film.Id = id;
+                if (!int.TryParse(txtId.Text, out int id))
+                {
+                    MessageBox.Show("Invalid ID.");
+                    return;
+                }
+
+                if (!int.TryParse(txtYear.Text, out int parsedYear) || parsedYear <= 1800 || parsedYear > DateTime.Now.Year + 1)
+                {
+                    MessageBox.Show("Please enter a valid year between 1800 and next year.");
+                    return;
+                }
+
+                var film = new Film
+                {
+                    Id = id,
+                    Title = txtTitle.Text,
+                    Director = txtDirector.Text,
+                    Year = parsedYear,
+                    Genre = txtGenre.Text,
+                    Description = txtDescription.Text
+                };
+
                 filmBusiness.Update(film);
                 LoadFilms();
                 ClearFields();
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Invalid ID for update.");
+                MessageBox.Show($"An error occurred while updating the film:\n{ex.Message}");
             }
         }
+
 
         // Deletes a film using its ID.
         private void btnDelete_Click(object sender, EventArgs e)
@@ -112,6 +142,10 @@ namespace Filmisub2
             {
                 MessageBox.Show("Invalid ID.");
             }
+        }
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            ClearFields(); // Already exists in your code
         }
     }
 }

@@ -14,6 +14,7 @@
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnFetch;
+        private System.Windows.Forms.Button btnClear;
         private System.Windows.Forms.Label lblId;
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.Label lblDirector;
@@ -64,7 +65,7 @@
             // ID
             this.lblId.Location = new System.Drawing.Point(labelX, startY);
             this.lblId.Size = new System.Drawing.Size(80, 20);
-            this.lblId.Text = "ID:";
+            this.lblId.Text = "ID Selection:";
             this.txtId.Location = new System.Drawing.Point(textBoxX, startY);
             this.txtId.Size = new System.Drawing.Size(180, 20);
 
@@ -123,6 +124,13 @@
             this.btnFetch.Location = new System.Drawing.Point(350, 130);
             this.btnFetch.Size = new System.Drawing.Size(100, 30);
             this.btnFetch.Click += new System.EventHandler(this.btnFetch_Click);
+            // Clear Button
+            this.btnClear = new System.Windows.Forms.Button();
+            this.btnClear.Text = "Clear Fields";
+            this.btnClear.Location = new System.Drawing.Point(350, 170);
+            this.btnClear.Size = new System.Drawing.Size(100, 30);
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            this.Controls.Add(this.btnClear);
 
             // Form
             this.ClientSize = new System.Drawing.Size(630, 460);

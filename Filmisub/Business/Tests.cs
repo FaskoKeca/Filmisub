@@ -14,12 +14,11 @@ namespace Filmisub.Tests
         private FilmBusiness filmBusiness;
         private string connectionString;
 
-        // Sets up test dependencies before each test runs.
         [SetUp]
         public void Setup()
         {
             filmBusiness = new FilmBusiness();
-            connectionString = ConfigurationManager.ConnectionStrings["FlowerContext"].ConnectionString;
+            connectionString = ConfigurationManager.ConnectionStrings["FilmContext"].ConnectionString;
         }
 
         // Tests whether fetching a valid film ID returns the correct object.
@@ -41,7 +40,7 @@ namespace Filmisub.Tests
             Assert.That(film, Is.Null);
         }
 
-        // Tests that adding a new film increases the total count.
+        // Tests that adding a film with partial data increases count.
         [Test]
         public void Add_ShouldIncreaseFilmCount()
         {
@@ -58,49 +57,101 @@ namespace Filmisub.Tests
             Assert.That(updatedCount, Is.EqualTo(initialCount + 1));
         }
 
-        // Tests updating an existing film changes its title.
+        // Tests that adding a fully populated film saves all properties.
         [Test]
-        public void Update_ExistingId_ShouldUpdateTitle()
+        public void Add_FullFilm_ShouldSaveAllFields()
         {
-            int id = 2003;
-            Film existingFlower = filmBusiness.Get(id);
-            string newName = "Updated Name";
-            existingFlower.Title = newName;
+            Film film = new Film
+            {
+                Title = "Full Film",
+                Director = "Test Director",
+                Year = 2023,
+                Genre = "Drama",
+                Description = "Detailed film description."
+            };
 
-            filmBusiness.Update(existingFlower);
-            Film updatedFilm = filmBusiness.Get(id);
+            filmBusiness.Add(film);
 
-            Assert.That(updatedFilm, Is.Not.Null);
-            Assert.That(updatedFilm.Title, Is.EqualTo(newName));
+            Film saved = filmBusiness.GetAll().FirstOrDefault(f => f.Title == "Full Film");
+            Assert.That(saved, Is.Not.Null);
+            Assert.That(saved.Director, Is.EqualTo("Test Director"));
+            Assert.That(saved.Year, Is.EqualTo(2023));
+            Assert.That(saved.Genre, Is.EqualTo("Drama"));
+            Assert.That(saved.Description, Is.EqualTo("Detailed film description."));
         }
 
-        // Tests that deleting an existing film reduces the total count.
+        // Tests updating a film's title and director.
+        [Test]
+        public void Update_ExistingId_ShouldUpdateMultipleFields()
+        {
+            int id = 2003;
+            Film film = filmBusiness.Get(id);
+
+            string newTitle = "Updated Title";
+            string newDirector = "Updated Director";
+            film.Title = newTitle;
+            film.Director = newDirector;
+
+            filmBusiness.Update(film);
+            Film updated = filmBusiness.Get(id);
+
+            Assert.That(updated.Title, Is.EqualTo(newTitle));
+            Assert.That(updated.Director, Is.EqualTo(newDirector));
+        }
+
+        // Tests updating year and genre.
+        [Test]
+        public void Update_ShouldChangeYearAndGenre()
+        {
+            var film = new Film
+            {
+                Title = "Year Genre Film",
+                Director = "Dir",
+                Year = 2000,
+                Genre = "Old Genre",
+                Description = "..."
+            };
+            filmBusiness.Add(film);
+            var added = filmBusiness.GetAll().First(f => f.Title == "Year Genre Film");
+
+            added.Year = 2024;
+            added.Genre = "New Genre";
+            filmBusiness.Update(added);
+
+            var updated = filmBusiness.Get(added.Id);
+            Assert.That(updated.Year, Is.EqualTo(2024));
+            Assert.That(updated.Genre, Is.EqualTo("New Genre"));
+        }
+
+        // Tests that deleting an existing film decreases the total count.
         [Test]
         public void Delete_ExistingId_ShouldDecreaseFilmCount()
         {
-            int id = 2005;
-            int initialCount = filmBusiness.GetAll().Count;
+            var film = new Film { Title = "Delete Test", Description = "To be deleted" };
+            filmBusiness.Add(film);
+            int id = filmBusiness.GetAll().First(f => f.Title == "Delete Test").Id;
 
+            int countBefore = filmBusiness.GetAll().Count;
             filmBusiness.Delete(id);
-            int updatedCount = filmBusiness.GetAll().Count;
+            int countAfter = filmBusiness.GetAll().Count;
 
-            Assert.That(updatedCount, Is.EqualTo(initialCount - 1));
+            Assert.That(countAfter, Is.EqualTo(countBefore - 1));
         }
 
         // Tests that deleting a non-existent ID does not affect the count.
         [Test]
         public void Delete_NonexistentId_ShouldNotChangeFilmCount()
         {
-            int id = -1;
-            int initialCount = filmBusiness.GetAll().Count;
+            int id = -99;
+            int countBefore = filmBusiness.GetAll().Count;
 
             filmBusiness.Delete(id);
-            int updatedCount = filmBusiness.GetAll().Count;
+            int countAfter = filmBusiness.GetAll().Count;
 
-            Assert.That(updatedCount, Is.EqualTo(initialCount));
+            Assert.That(countAfter, Is.EqualTo(countBefore));
         }
 
-        // Tests if the database connection can be successfully opened.
+        // Tests if the database connection string works.
         [Test]
         public void DatabaseConnection_ShouldBeOpen()
         {
@@ -109,6 +160,49 @@ namespace Filmisub.Tests
                 connection.Open();
                 Assert.That(connection.State, Is.EqualTo(System.Data.ConnectionState.Open));
             }
+        }
+
+        // Tests that GetAll returns at least one entry when films are present.
+        [Test]
+        public void GetAll_ShouldReturnNonEmptyListAfterAdd()
+        {
+            filmBusiness.Add(new Film { Title = "Listed Film", Description = "For GetAll test" });
+            var list = filmBusiness.GetAll();
+            Assert.That(list.Count, Is.GreaterThan(0));
+        }
+
+        // Tests that films with empty fields still save correctly.
+        [Test]
+        public void Add_EmptyOptionalFields_ShouldStillSave()
+        {
+            var film = new Film
+            {
+                Title = "No Genre or Director",
+                Year = 2023,
+                Description = "Edge case test"
+            };
+
+            filmBusiness.Add(film);
+            var saved = filmBusiness.GetAll().FirstOrDefault(f => f.Title == "No Genre or Director");
+
+            Assert.That(saved, Is.Not.Null);
+            Assert.That(saved.Genre, Is.Null.Or.Empty);
+            Assert.That(saved.Director, Is.Null.Or.Empty);
+        }
+
+        // Tests re-adding a deleted film with the same data.
+        [Test]
+        public void ReAdd_DeletedFilm_ShouldSucceed()
+        {
+            var film = new Film { Title = "ReAdd Test", Description = "Will be deleted and re-added" };
+            filmBusiness.Add(film);
+            var saved = filmBusiness.GetAll().First(f => f.Title == "ReAdd Test");
+
+            filmBusiness.Delete(saved.Id);
+
+            filmBusiness.Add(film); // Re-add same data
+            var readded = filmBusiness.GetAll().FirstOrDefault(f => f.Title == "ReAdd Test");
+            Assert.That(readded, Is.Not.Null);
         }
     }
 }
