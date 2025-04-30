@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Filmisub.Data
 {
-    internal class FilmContext : DbContext
+    public class FilmContext : DbContext
     {
         public FilmContext() : base("name=FilmContext")
         {

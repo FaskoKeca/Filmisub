@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Filmisub.Business
 {
-    internal class FilmBusiness
+    public class FilmBusiness
     {
-        private FilmContext filmContext;
+        public FilmContext filmContext;
 
         public List<Film> GetAll()
         {
